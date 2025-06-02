@@ -74,7 +74,7 @@
           <!-- Action Buttons -->
           <div class="mt-auto space-y-2">
             {% if car.quantity > 0 %}
-              <a href="{% if not user.is_authenticated %}{% url 'user_login' %}?next={% url 'car_detail' car.id %}{% else %}{% url 'car_detail' car.id %}{% endif %}"
+              <a href="{% if not user.is_authenticated %}{% url 'user_login' %}?next={% url 'car_detail' car.id %}{% else %}{% url 'buy_car' car.id %}{% endif %}"
                 class="block w-full bg-pink-500 hover:bg-pink-600 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition duration-200 text-center"
                 {% if not user.is_authenticated %}title="Login to purchase"{% endif %}>
                 {% if not user.is_authenticated %}LOGIN TO BUY{% else %}BUY NOW{% endif %}

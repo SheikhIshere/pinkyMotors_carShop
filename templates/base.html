@@ -1,4 +1,4 @@
-{% load static %} 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,34 +14,27 @@
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
         .navbar {
             background-color: #ff5ebc;
             box-shadow: 0 2px 10px rgba(255, 94, 188, 0.2);
         }
-        
         .nav-link {
             transition: all 0.3s ease;
         }
-        
         .nav-link:hover {
             color: white;
             transform: translateY(-2px);
         }
-        
         .active-link {
             border-bottom: 2px solid white;
             font-weight: 600;
         }
-        
         .main-content {
             min-height: calc(100vh - 120px);
         }
-
         .message {
             animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 1.5s forwards;
         }
-
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -52,7 +45,6 @@
                 opacity: 1;
             }
         }
-
         @keyframes fadeOut {
             to {
                 opacity: 0;
@@ -62,24 +54,16 @@
     </style>
 </head>
 <body>
-    <!-- Message Notification Container -->
-    <div id="message-container" class="fixed top-4 right-4 z-50 space-y-2 hidden">
-        <!-- Messages will be inserted here -->
-    </div>
+    <div id="message-container" class="fixed top-4 right-4 z-50 space-y-2 hidden"></div>
 
-    <!-- Fixed Compact Navigation Bar -->
+    <!-- Navbar -->
     <nav class="navbar text-white px-3 shadow-md mx-4 my-2 rounded-full h-16 flex items-center z-50 relative"
          style="background: linear-gradient(90deg, #843bff 0%, #d7a9ff 25%, #ff8cf7 60%, #ffadad 100%);">
-
         <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
-            
-            <!-- Logo + Search -->
             <div class="flex items-center gap-4 pl-2">
                 <a href="{% url 'homepage' %}">
                   <img src="{% static 'images/pinky_motors_logo.webp' %}" alt="Logo" class="h-20 w-auto">
                 </a>
-                
-                <!-- Search -->
                 <div class="hidden sm:flex items-center space-x-2">
                     <input type="text" placeholder="Search..."
                            class="px-3 py-1 text-sm rounded-full bg-pink-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-300 w-44 md:w-60" />
@@ -88,11 +72,44 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-4">
                 <a href="{% url 'homepage' %}" class="nav-link"><i class="fas fa-home mr-1"></i> Home</a>
-                <a href="#" class="nav-link"><i class="fas fa-sliders-h mr-1"></i> Filter</a>
+                
+                <!-- Filter Dropdown -->
+                <div class="relative" id="filter-dropdown-container">
+                    <button id="filter-dropdown-button" class="flex items-center space-x-1 nav-link">
+                        <i class="fas fa-sliders-h mr-1"></i>
+                        <span>Filter</span>
+                        <i class="fas fa-chevron-down text-xs transition-transform" id="filter-dropdown-chevron"></i>
+                    </button>
+                    <div id="filter-dropdown"
+                         class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg py-1 hidden z-50 border border-gray-200 p-4">
+                        <form id="brand-filter-form" action="{% url 'homepage' %}" method="get">
+                            <h4 class="font-semibold mb-2 text-pink-600">Filter by Brand</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <select name="brand"
+                                            class="w-full px-2 py-1 text-sm border rounded text-black bg-white appearance-none">
+                                        <option value="">All Brands</option>
+                                        {% for brand in brands %}
+                                        <option value="{{ brand.slug }}" {% if request.GET.brand == brand.slug %}selected{% endif %}>
+                                            {{ brand.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-1 px-3 rounded text-sm mt-2">
+                                    Apply Filter
+                                </button>
+                                {% if request.GET.brand %}
+                                <a href="{% url 'homepage' %}" class="block text-center text-sm text-pink-600 hover:text-pink-800 mt-1">
+                                    Clear Filter
+                                </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Account Dropdown -->
                 <div class="relative" id="account-dropdown-container">
@@ -114,25 +131,45 @@
                 </div>
             </div>
 
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Nav Button -->
             <div class="md:hidden pr-2">
                 <button id="mobile-menu-button" class="text-white focus:outline-none p-2 rounded-full hover:bg-white/10">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
 
-            <!-- Mobile Menu -->
+            <!-- Mobile Nav -->
             <div id="mobile-menu" class="fixed inset-0 w-full h-full bg-black/50 z-40 hidden transition-opacity duration-300 opacity-0 pointer-events-none">
                 <div class="absolute top-16 right-0 w-3/4 bg-white rounded-lg shadow-lg p-4 transform transition-transform duration-300 translate-x-full">
                     <button id="mobile-menu-close" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-                        
+                        <i class="fas fa-times"></i>
                     </button>
                     <div class="mb-4">
                         <input type="text" placeholder="Search..."
                                class="w-full px-3 py-2 text-sm rounded-full bg-pink-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-300" />
                     </div>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-pink-100 rounded">Home</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-pink-100 rounded">Filter</a>
+                    <a href="{% url 'homepage' %}" class="block px-4 py-2 text-gray-800 hover:bg-pink-100 rounded">Home</a>
+                    <div class="px-4 py-2">
+                        <h4 class="font-semibold text-gray-800 mb-2">Filter by Brand</h4>
+                        <form id="mobile-brand-filter-form" action="{% url 'homepage' %}" method="get" class="space-y-2">
+                            <select name="brand" class="w-full px-2 py-1 text-sm border rounded">
+                                <option value="">All Brands</option>
+                                {% for brand in brands %}
+                                <option value="{{ brand.slug }}" {% if request.GET.brand == brand.slug %}selected{% endif %}>
+                                    {{ brand.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-1 px-3 rounded text-sm">
+                                Apply Filter
+                            </button>
+                            {% if request.GET.brand %}
+                            <a href="{% url 'homepage' %}" class="block text-center text-sm text-pink-600 hover:text-pink-800">
+                                Clear Filter
+                            </a>
+                            {% endif %}
+                        </form>
+                    </div>
                     {% if user.is_authenticated %}
                         <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-800 hover:bg-pink-100 rounded">Profile</a>
                         <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-gray-800 hover:bg-pink-100 rounded">Logout</a>
@@ -158,7 +195,8 @@
         {% block content %}    
         {% endblock %}
     </main>
-    
+
+    <!-- Footer -->
     <!-- Footer Section -->
     <footer class="bg-[#ff5ebc] text-white py-6 mt-12">
         <div class="container mx-auto px-4">
@@ -226,124 +264,151 @@
             </div>
         </div>
     </footer>
+<script>
+    // ===== MOBILE MENU TOGGLE =====
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileClose = document.getElementById('mobile-menu-close');
+    const mobileMenuPanel = mobileMenu?.querySelector('div');
 
-    <script>
-        // Mobile Menu Functionality
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuClose = document.getElementById('mobile-menu-close');
-        const mobileMenuContent = mobileMenu.querySelector('div');
-
-        function openMobileMenu() {
-            mobileMenu.classList.remove('hidden');
+    function closeMobileMenu() {
+        if (mobileMenu && mobileMenuPanel) {
+            mobileMenu.classList.remove('opacity-100');
+            mobileMenuPanel.classList.add('translate-x-full');
             setTimeout(() => {
-                mobileMenu.classList.remove('opacity-0');
-                mobileMenu.classList.remove('pointer-events-none');
-                mobileMenuContent.classList.remove('translate-x-full');
-            }, 10);
-        }
-
-        function closeMobileMenu() {
-            mobileMenuContent.classList.add('translate-x-full');
-            mobileMenu.classList.add('opacity-0');
-            mobileMenu.classList.add('pointer-events-none');
-            setTimeout(() => {
-                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.add('hidden', 'opacity-0', 'pointer-events-none');
             }, 300);
         }
+    }
 
-        mobileMenuButton.addEventListener('click', openMobileMenu);
-        mobileMenuClose.addEventListener('click', closeMobileMenu);
-
-        // Close when clicking on overlay
-        mobileMenu.addEventListener('click', (e) => {
-            if (e.target === mobileMenu) {
-                closeMobileMenu();
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            if (mobileMenu && mobileMenuPanel) {
+                mobileMenu.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    mobileMenu.classList.add('opacity-100');
+                    mobileMenuPanel.classList.remove('translate-x-full');
+                }, 10);
             }
         });
+    }
 
-        // Close when clicking on links
+    if (mobileClose) {
+        mobileClose.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close mobile menu on link click
+    if (mobileMenu) {
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', closeMobileMenu);
         });
+    }
 
-        // Dropdown functionality
-        const dropdownButton = document.getElementById('account-dropdown-button');
-        const dropdownMenu = document.getElementById('account-dropdown');
-        const chevron = document.getElementById('dropdown-chevron');
+    // ===== FILTER DROPDOWN =====
+    const filterBtn = document.getElementById('filter-dropdown-button');
+    const filterDropdown = document.getElementById('filter-dropdown');
+    const filterChevron = document.getElementById('filter-dropdown-chevron');
 
-        dropdownButton.addEventListener('click', (e) => {
+    if (filterBtn && filterDropdown) {
+        filterBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            dropdownMenu.classList.toggle('hidden');
-            chevron.classList.toggle('rotate-180');
+            filterDropdown.classList.toggle('hidden');
+            if (filterChevron) {
+                filterChevron.classList.toggle('rotate-180');
+            }
         });
 
+        // Close when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('#account-dropdown-container')) {
-                dropdownMenu.classList.add('hidden');
-                chevron.classList.remove('rotate-180');
+            if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+                filterDropdown.classList.add('hidden');
+                if (filterChevron) {
+                    filterChevron.classList.remove('rotate-180');
+                }
+            }
+        });
+    }
+
+    // ===== ACCOUNT DROPDOWN =====
+    const accountBtn = document.getElementById('account-dropdown-button');
+    const accountDropdown = document.getElementById('account-dropdown');
+    const accountChevron = document.getElementById('dropdown-chevron');
+
+    if (accountBtn && accountDropdown) {
+        accountBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            accountDropdown.classList.toggle('hidden');
+            if (accountChevron) {
+                accountChevron.classList.toggle('rotate-180');
             }
         });
 
-        // Message notification system
-        function showMessage(type, text) {
-            const container = document.getElementById('message-container');
-            const message = document.createElement('div');
-            
-            // Set base classes
-            let classes = "message px-4 py-3 rounded-lg shadow-lg text-white flex items-center";
-            
-            // Add type-specific classes
-            switch(type) {
-                case 'success':
-                    classes += " bg-green-500";
-                    break;
-                case 'error':
-                    classes += " bg-red-500";
-                    break;
-                case 'info':
-                    classes += " bg-blue-500";
-                    break;
-                case 'warning':
-                    classes += " bg-yellow-500";
-                    break;
-                default:
-                    classes += " bg-pink-500";
-            }
-            
-            message.className = classes;
-            message.innerHTML = `
-                <i class="fas ${getIcon(type)} mr-2"></i>
-                <span>${text}</span>
-            `;
-            
-            container.appendChild(message);
-            container.classList.remove('hidden');
-            
-            // Remove message after 2 seconds
-            setTimeout(() => {
-                message.remove();
-                if (container.children.length === 0) {
-                    container.classList.add('hidden');
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!accountBtn.contains(e.target) && !accountDropdown.contains(e.target)) {
+                accountDropdown.classList.add('hidden');
+                if (accountChevron) {
+                    accountChevron.classList.remove('rotate-180');
                 }
-            }, 2000);
-        }
+            }
+        });
+    }
 
-        function getIcon(type) {
-            switch(type) {
-                case 'success': return 'fa-check-circle';
-                case 'error': return 'fa-exclamation-circle';
-                case 'info': return 'fa-info-circle';
-                case 'warning': return 'fa-exclamation-triangle';
-                default: return 'fa-bell';
+    // ===== MESSAGE DISPLAY =====
+    function showMessage(type, message) {
+        const container = document.getElementById('message-container');
+        if (!container) return;
+
+        const messageEl = document.createElement('div');
+        let bgColor = 'bg-blue-500';
+        
+        if (type === 'success') bgColor = 'bg-green-500';
+        if (type === 'error') bgColor = 'bg-red-500';
+        if (type === 'warning') bgColor = 'bg-yellow-500';
+
+        messageEl.className = `${bgColor} text-white px-4 py-2 rounded-lg shadow-lg message`;
+        messageEl.textContent = message;
+        
+        container.appendChild(messageEl);
+        container.classList.remove('hidden');
+
+        setTimeout(() => {
+            messageEl.remove();
+            if (container.children.length === 0) {
+                container.classList.add('hidden');
+            }
+        }, 3000);
+    }
+
+    // Close dropdowns when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (filterDropdown && !filterDropdown.classList.contains('hidden')) {
+                filterDropdown.classList.add('hidden');
+                if (filterChevron) filterChevron.classList.remove('rotate-180');
+            }
+            if (accountDropdown && !accountDropdown.classList.contains('hidden')) {
+                accountDropdown.classList.add('hidden');
+                if (accountChevron) accountChevron.classList.remove('rotate-180');
             }
         }
+    });
 
-        // Example usage (you can call this from your Django templates or other JS):
-        // showMessage('success', 'Profile updated successfully!');
-        // showMessage('error', 'Failed to save changes.');
-        // showMessage('info', 'New messages available.');
-        // showMessage('warning', 'Please verify your email.');
-    </script>
+    // Better mobile touch handling
+    document.addEventListener('touchstart', (e) => {
+        if (filterDropdown && !filterDropdown.classList.contains('hidden') && 
+            !filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+            filterDropdown.classList.add('hidden');
+            if (filterChevron) filterChevron.classList.remove('rotate-180');
+        }
+        
+        if (accountDropdown && !accountDropdown.classList.contains('hidden') && 
+            !accountBtn.contains(e.target) && !accountDropdown.contains(e.target)) {
+            accountDropdown.classList.add('hidden');
+            if (accountChevron) accountChevron.classList.remove('rotate-180');
+        }
+    });
+</script>
+
 </body>
 </html>

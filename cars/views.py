@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Car, Purchase
 from .forms import PurchaseForm
+from brands.models import Brand 
 
 
 
@@ -24,9 +25,6 @@ class CarCreateView(UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.is_staff  # only staff/admin can access
 
-def home(request):
-    cars = Car.objects.all()
-    return render(request,'homepage.html', {'cars': cars})
 
 
 def car_detail(request, pk):
@@ -86,7 +84,7 @@ def buy_car(request, pk):
             car.save()
             
             messages.success(request, "Purchase completed successfully!")
-            return redirect('homepage')
+            return redirect('profile')
     else:
         quantity = int(request.GET.get('quantity', 1))
         form = PurchaseForm(initial={
@@ -99,4 +97,19 @@ def buy_car(request, pk):
         'quantity': quantity,
         'total_price': car.price * quantity,
         'user': request.user
+    })
+
+
+def home(request):
+    cars = Car.objects.all()
+    brands = Brand.objects.all()  # Get all brands for the filter dropdown
+    
+    # Apply brand filter if specified
+    brand_slug = request.GET.get('brand')
+    if brand_slug:
+        cars = cars.filter(brand__slug=brand_slug)
+    
+    return render(request, 'homepage.html', {
+        'cars': cars,
+        'brands': brands  # Pass brands to template
     })
