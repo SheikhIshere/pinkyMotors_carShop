@@ -1,0 +1,15 @@
+﻿asgiref
+dj-database-url
+Django
+django-environ
+django-filter
+django-tailwind
+djangorestframework
+Markdown
+pillow
+psycopg2
+psycopg2-binary
+python-dotenv
+sqlparse
+typing_extensions
+tzdata
