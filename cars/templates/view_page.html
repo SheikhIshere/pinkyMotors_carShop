@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block head %}
   <!-- Load Google Fonts only once in the head -->
@@ -55,7 +56,7 @@
           <p class="text-xs text-gray-500 font-medium mb-1">PRICE</p>
           <div class="text-3xl font-black text-rose-600 tracking-tight flex items-baseline gap-2">
             <span aria-label="currency symbol">৳</span>
-            <span>{{ car.price|floatformat:0 }}</span>
+            {{ car.price|floatformat:0|intcomma }}
             <span class="text-lg text-gray-400 font-medium">TAKA</span>
           </div>
         </div>

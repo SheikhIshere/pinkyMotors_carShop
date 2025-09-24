@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Pinky Motors - Homepage{% endblock %}
 
@@ -54,7 +55,7 @@
             <p class="text-sm text-gray-500 font-medium mb-1">Price</p>
             <div class="text-2xl font-extrabold text-rose-600 tracking-tight leading-tight flex items-baseline gap-1">
               <span class="text-lg font-bold">৳</span>
-              <span>{{ car.price|floatformat:0 }}</span>
+              <span>{{ car.price|floatformat:0|intcomma }}</span>
               <span class="text-sm text-gray-400 font-medium ml-1">TAKA</span>
             </div>
           </div>
